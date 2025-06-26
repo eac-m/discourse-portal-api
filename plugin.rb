@@ -1,8 +1,8 @@
 # name: discourse-portal-api
-# about: API endpoint for EACM portal integration - returns latest topics visible to the API user
+# about: API endpoint for EACM portal integration
 # version: 0.1
 # authors: EACM
-# url: https://github.com/eac-m/discourse-baseline-latest
+# url: https://github.com/eac-m/discourse-portal-api
 
 enabled_site_setting :baseline_latest_enabled
 
@@ -32,12 +32,17 @@ after_initialize do
       api_user = api_key_record.user
       guardian = Guardian.new(api_user)
       
+      # Get the limit parameter
+      requested_limit = params[:limit]&.to_i || 20
+      requested_limit = [requested_limit, 100].min  # Cap at 100
+      
       topic_list = TopicQuery.new(api_user, {
         guardian: guardian,
-        limit: params[:limit]&.to_i || 20
+        per_page: requested_limit
       }).list_latest
       
-      topics = topic_list.topics.map do |t|
+      # Ensure we only return the requested number
+      topics = topic_list.topics.take(requested_limit).map do |t|
         {
           id: t.id,
           title: t.title,
