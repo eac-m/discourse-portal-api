@@ -51,7 +51,10 @@ curl -H "Api-Key: YOUR_API_KEY" \
       "last_posted_at": "2025-06-26T10:15:00.000Z",
       "category_name": "General",
       "tags": ["announcement", "news"],
-      "url": "https://discourse.eacm.nl/t/topic-title/269"
+      "url": "https://discourse.eacm.nl/t/topic-title/269",
+      "like_count": 42,
+      "views": 256,
+      "reply_count": 4
     }
   ],
   "count": 10
