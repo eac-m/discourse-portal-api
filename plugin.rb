@@ -1,0 +1,64 @@
+# name: baseline-latest-api
+# about: API endpoint for EACM portal integration - returns latest topics visible to the API user
+# version: 0.1
+# authors: EACM
+# url: https://github.com/eac-m/discourse-baseline-latest
+
+enabled_site_setting :baseline_latest_enabled
+
+after_initialize do
+  require_dependency 'application_controller'
+  
+  class ::BaselineLatestController < ::ApplicationController
+    skip_before_action :check_xhr, :verify_authenticity_token, :redirect_to_login_if_required
+    
+    def latest
+      # Check API key
+      api_key = request.headers['Api-Key']
+      
+      if api_key.blank?
+        render json: { error: 'API key required' }, status: 401
+        return
+      end
+      
+      api_key_record = ApiKey.with_key(api_key).first
+      
+      if api_key_record.nil?
+        render json: { error: 'Invalid API key' }, status: 401
+        return
+      end
+      
+      # Use the API user's permissions
+      api_user = api_key_record.user
+      guardian = Guardian.new(api_user)
+      
+      topic_list = TopicQuery.new(api_user, {
+        guardian: guardian,
+        limit: params[:limit]&.to_i || 20
+      }).list_latest
+      
+      topics = topic_list.topics.map do |t|
+        {
+          id: t.id,
+          title: t.title,
+          slug: t.slug,
+          posts_count: t.posts_count,
+          created_at: t.created_at,
+          last_posted_at: t.last_posted_at,
+          category_name: t.category&.name,
+          tags: t.tags.pluck(:name),
+          url: "#{Discourse.base_url}/t/#{t.slug}/#{t.id}"
+        }
+      end
+      
+      render json: { 
+        topics: topics,
+        count: topics.length
+      }
+    end
+  end
+  
+  Discourse::Application.routes.append do
+    get '/baseline_latest' => 'baseline_latest#latest'
+  end
+end

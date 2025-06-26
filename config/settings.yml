@@ -1,0 +1,5 @@
+plugins:
+  baseline_latest_enabled:
+    default: true
+    client: false
+    description: "Enable the baseline latest topics API endpoint"
