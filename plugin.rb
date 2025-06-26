@@ -3,9 +3,7 @@
 # version: 0.1
 # authors: EACM
 # url: https://github.com/eac-m/discourse-portal-api
-
 enabled_site_setting :baseline_latest_enabled
-
 after_initialize do
   require_dependency 'application_controller'
   
@@ -52,7 +50,10 @@ after_initialize do
           last_posted_at: t.last_posted_at,
           category_name: t.category&.name,
           tags: t.tags.pluck(:name),
-          url: "#{Discourse.base_url}/t/#{t.slug}/#{t.id}"
+          url: "#{Discourse.base_url}/t/#{t.slug}/#{t.id}",
+          like_count: t.like_count,
+          views: t.views,
+          reply_count: t.reply_count
         }
       end
       
