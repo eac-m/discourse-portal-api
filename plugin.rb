@@ -1,4 +1,4 @@
-# name: baseline-latest-api
+# name: discourse-portal-api
 # about: API endpoint for EACM portal integration - returns latest topics visible to the API user
 # version: 0.1
 # authors: EACM
