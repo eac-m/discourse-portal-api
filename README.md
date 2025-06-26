@@ -34,7 +34,7 @@ GET https://discourse.eacm.nl/baseline_latest
 ### Example Request
 ```bash
 curl -H "Api-Key: YOUR_API_KEY" \
-     -H "Api-Username: eacm_portal" \
+     -H "Api-Username: portal_user" \
      https://discourse.eacm.nl/baseline_latest?limit=10
 ```
 
